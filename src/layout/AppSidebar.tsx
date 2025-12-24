@@ -2,9 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
   BoxCubeIcon,
+  BoxIcon,
   CalenderIcon,
+  CheckCircleIcon,
   ChevronDownIcon,
   GridIcon,
+  GroupIcon,
   HorizontaLDots,
   ListIcon,
   PageIcon,
@@ -12,9 +15,10 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
+  UserIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
+// import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -24,18 +28,75 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { icon: <GridIcon />, name: "Dashboard", subItems: [{ name: "Ecommerce", path: "/", pro: false }] },
-  { icon: <CalenderIcon />, name: "Calendar", path: "/calendar" },
-  { icon: <UserCircleIcon />, name: "User Profile", path: "/profile" },
-  { icon: <ListIcon />, name: "Forms", subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }] },
-  { icon: <TableIcon />, name: "Tables", subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }] },
-  { icon: <PageIcon />, name: "Pages", subItems: [{ name: "Blank Page", path: "/blank", pro: false }, { name: "404 Error", path: "/error-404", pro: false }] },
+  {
+    icon: <GridIcon />,
+    name: "Boshqaruv paneli",
+    subItems: [{ name: "Elektron tijorat", path: "/", pro: false }],
+  },
+  {
+    icon: <UserIcon />,           // O'qituvchi uchun odam ikonkasi
+    name: "O'qituvchilar",
+    path: "/teachers",
+  },
+  {
+    icon: <UserCircleIcon />,     // Talaba uchun doira ichidagi odam
+    name: "O'quvchilar",
+    path: "/students",
+  },
+  {
+    icon: <GroupIcon />,          // Ota-onalar ko'pincha oila/guruh sifatida ko'rsatiladi
+    name: "Ota-onalar",
+    path: "/parents",
+  },
+  {
+    icon: <CheckCircleIcon />,    // Davomat — kelgan/kelmagan belgilash
+    name: "Davomat",
+    path: "/attendance",
+  },
+  {
+    icon: <GroupIcon />,          // Guruhlar — bir nechta odam
+    name: "Guruhlar",
+    path: "/groups",
+  },
+  {
+    icon: <BoxIcon />,            // Xonalar — bino/xona ramzi
+    name: "Xonalar",
+    path: "/rooms",
+  },
+  {
+    icon: <CalenderIcon />,       // Haqiqiy taqvim
+    name: "Taqvim",
+    path: "/calendar",
+  },
+  {
+    icon: <UserCircleIcon />,
+    name: "Shaxsiy profil",
+    path: "/profile",
+  },
+  {
+    icon: <ListIcon />,
+    name: "Formalar",
+    subItems: [{ name: "Forma elementlari", path: "/form-elements", pro: false }],
+  },
+  {
+    icon: <TableIcon />,
+    name: "Jadvallar",
+    subItems: [{ name: "Oddiy jadvallar", path: "/basic-tables", pro: false }],
+  },
+  {
+    icon: <PageIcon />,
+    name: "Sahifalar",
+    subItems: [
+      { name: "Bo‘sh sahifa", path: "/blank", pro: false },
+      { name: "404 Xato", path: "/error-404", pro: false },
+    ],
+  },
 ];
 
 const othersItems: NavItem[] = [
-  { icon: <PieChartIcon />, name: "Charts", subItems: [{ name: "Line Chart", path: "/line-chart", pro: false }, { name: "Bar Chart", path: "/bar-chart", pro: false }] },
-  { icon: <BoxCubeIcon />, name: "UI Elements", subItems: [{ name: "Alerts", path: "/alerts", pro: false }, { name: "Avatar", path: "/avatars", pro: false }, { name: "Badge", path: "/badge", pro: false }, { name: "Buttons", path: "/buttons", pro: false }, { name: "Images", path: "/images", pro: false }, { name: "Videos", path: "/videos", pro: false }] },
-  { icon: <PlugInIcon />, name: "Authentication", subItems: [{ name: "Sign In", path: "/signin", pro: false }, { name: "Sign Up", path: "/signup", pro: false }] },
+  { icon: <PieChartIcon />, name: "Diagrammalar", subItems: [{ name: "Chiziqli diagramma", path: "/line-chart", pro: false }, { name: "Ustunli diagramma", path: "/bar-chart", pro: false }] },
+  { icon: <BoxCubeIcon />, name: "UI elementlari", subItems: [{ name: "Ogohlantirishlar", path: "/alerts", pro: false }, { name: "Avatar", path: "/avatars", pro: false }, { name: "Belgilar", path: "/badge", pro: false }, { name: "Tugmalar", path: "/buttons", pro: false }, { name: "Rasmlar", path: "/images", pro: false }, { name: "Videolar", path: "/videos", pro: false }] },
+  { icon: <PlugInIcon />, name: "Autentifikatsiya", subItems: [{ name: "Kirish", path: "/signin", pro: false }, { name: "Ro‘yxatdan o‘tish", path: "/signup", pro: false }] },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -46,7 +107,6 @@ const AppSidebar: React.FC = () => {
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // startsWith bilan ishlaydi, shunda sub-pathlar ham to'g'ri active bo'ladi
   const isActive = useCallback(
     (path: string) => location.pathname.startsWith(path),
     [location.pathname]
@@ -133,7 +193,7 @@ const AppSidebar: React.FC = () => {
                     >
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && <span className={`ml-auto ${isActive(subItem.path) ? "menu-dropdown-badge-active" : "menu-dropdown-badge-inactive"} menu-dropdown-badge`}>new</span>}
+                        {subItem.new && <span className={`ml-auto ${isActive(subItem.path) ? "menu-dropdown-badge-active" : "menu-dropdown-badge-inactive"} menu-dropdown-badge`}>yangi</span>}
                         {subItem.pro && <span className={`ml-auto ${isActive(subItem.path) ? "menu-dropdown-badge-active" : "menu-dropdown-badge-inactive"} menu-dropdown-badge`}>pro</span>}
                       </span>
                     </Link>
@@ -173,19 +233,18 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots className="size-6" />}
+                {isExpanded || isHovered || isMobileOpen ? "Menyu" : <HorizontaLDots className="size-6" />}
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
             <div>
               <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-                {isExpanded || isHovered || isMobileOpen ? "Others" : <HorizontaLDots />}
+                {isExpanded || isHovered || isMobileOpen ? "Boshqalar" : <HorizontaLDots />}
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

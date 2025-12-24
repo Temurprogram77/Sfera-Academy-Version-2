@@ -23,6 +23,12 @@ import SuperAdmin from "./dashboards/super_admin";
 import Teacher from "./dashboards/teacher";
 import Student from "./dashboards/student";
 import Parent from "./dashboards/parent";
+import Teachers from "./pages/Teachers/Teachers";
+import Students from "./pages/Students/Students";
+import Parents from "./pages/Parents/Parents";
+import Attendance from "./pages/Attendance/Attendance";
+import Groups from "./pages/Groups/Groups";
+import Rooms from "./pages/Rooms/Rooms";
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,6 +60,12 @@ export default function App() {
           <Route path="dashboard/teacher" element={<Teacher />} />
           <Route path="dashboard/student" element={<Student />} />
           <Route path="dashboard/parent" element={<Parent />} />
+          <Route path="teachers" element={<Teachers />} />
+          <Route path="students" element={<Students />} />
+          <Route path="parents" element={<Parents />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="groups" element={<Groups />} />
+          <Route path="rooms" element={<Rooms />} />
 
           {/* Others Pages */}
           <Route path="profile" element={<UserProfiles />} />

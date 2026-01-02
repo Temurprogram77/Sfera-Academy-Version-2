@@ -18,13 +18,14 @@ import {
   UserIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { authService } from "../services/authService ";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
   subItems?: { name: string; path: string }[];
-  roles: string[]; // Qaysi rollarda ko'rinishi kerak
+  roles: string[];
 };
 
 const allNavItems: NavItem[] = [
@@ -154,14 +155,12 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // localStorage dan role ni o'qish - ✅ TO'G'IRLANDI
   useEffect(() => {
-    const role = localStorage.getItem("user_role"); // ✅ "user_role" ga o'zgartirdik
+    const role = authService.getRole()
     setCurrentRole(role);
-    console.log("Sidebar loaded with role:", role); // Debug uchun
+    console.log("Sidebar loaded with role:", role);
   }, []);
 
-  // Role bo'yicha filtrlangan menyular
   const filteredNavItems = allNavItems.filter(
     (item) => currentRole && item.roles.includes(currentRole)
   );
@@ -222,8 +221,8 @@ const AppSidebar: React.FC = () => {
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                ? "menu-item-active"
+                : "menu-item-inactive"
                 } cursor-pointer flex items-center gap-3 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
@@ -231,8 +230,8 @@ const AppSidebar: React.FC = () => {
             >
               <span
                 className={`menu-item-icon-size ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
                   }`}
               >
                 {nav.icon}
@@ -243,9 +242,9 @@ const AppSidebar: React.FC = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
-                      openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
+                    openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
                     }`}
                 />
               )}
@@ -288,8 +287,8 @@ const AppSidebar: React.FC = () => {
                     <Link
                       to={subItem.path}
                       className={`menu-dropdown-item ${isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
+                        ? "menu-dropdown-item-active"
+                        : "menu-dropdown-item-inactive"
                         }`}
                     >
                       {subItem.name}
@@ -304,7 +303,6 @@ const AppSidebar: React.FC = () => {
     </ul>
   );
 
-  // Agar role hali yuklanmagan bo'lsa, bo'sh sidebar
   if (!currentRole) {
     return null;
   }
@@ -343,13 +341,12 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar flex-1">
         <nav className="mb-6 flex-1">
           <div className="flex flex-col gap-8">
-            {/* Asosiy menyular */}
             {filteredNavItems.length > 0 && (
               <div>
                 <h2
                   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
+                    ? "lg:justify-center"
+                    : "justify-start"
                     }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? (
@@ -362,13 +359,12 @@ const AppSidebar: React.FC = () => {
               </div>
             )}
 
-            {/* Qo'shimcha menyular (faqat SUPER_ADMIN ga) */}
             {filteredOthersItems.length > 0 && (
               <div>
                 <h2
                   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                      ? "lg:justify-center"
-                      : "justify-start"
+                    ? "lg:justify-center"
+                    : "justify-start"
                     }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? (

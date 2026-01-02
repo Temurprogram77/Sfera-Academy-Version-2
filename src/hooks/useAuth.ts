@@ -6,7 +6,6 @@ import { authService } from '../services/authService ';
 export const useLogin = () => {
     return useMutation({
         mutationFn: (credentials: LoginRequest) => {
-            console.log('Login mutation starting with:', credentials);
             return authService.login(credentials);
         },
     });
@@ -19,7 +18,6 @@ export const useLogout = () => {
     };
 };
 
-// Authentication status'ni tekshirish
 export const useAuth = () => {
     const token = authService.getToken();
     const role = authService.getRole();

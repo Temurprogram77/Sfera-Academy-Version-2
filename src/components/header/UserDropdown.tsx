@@ -15,7 +15,7 @@ export default function UserDropdown() {
   }
 
   function handleSignOut() {
-    authService.logout(); // service orqali logout qilindi
+    authService.logout()
     closeDropdown();
   }
   return (

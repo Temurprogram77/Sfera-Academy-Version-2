@@ -28,23 +28,19 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
     if (!phone || !password) {
       toast.error("Telefon raqam va parolni kiriting!");
       return;
     }
 
-    // Phone format validation
     if (!phone.startsWith("998") && !phone.startsWith("+998")) {
       toast.error("Telefon raqam 998 bilan boshlanishi kerak!");
       return;
     }
 
-    // + belgisini olib tashlash
     const cleanPhone = phone.replace(/\+/g, "");
 
     try {
-      // API ga login request
       const response = await loginMutation.mutateAsync({
         phone: cleanPhone,
         password: password,

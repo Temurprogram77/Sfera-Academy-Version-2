@@ -33,15 +33,6 @@ class ApiClient {
                 if (token && config.headers) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
-
-                // Request log qilish (debugging)
-                console.log('API Request:', {
-                    method: config.method?.toUpperCase(),
-                    url: config.url,
-                    baseURL: config.baseURL,
-                    hasToken: !!token,
-                });
-
                 return config;
             },
             (error) => {
@@ -53,12 +44,6 @@ class ApiClient {
         // Response interceptor
         this.client.interceptors.response.use(
             (response) => {
-                // Response log qilish (debugging)
-                console.log('API Response:', {
-                    status: response.status,
-                    url: response.config.url,
-                    data: response.data,
-                });
                 return response;
             },
             (error: AxiosError<unknown>) => {

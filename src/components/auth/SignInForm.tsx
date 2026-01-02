@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
-import Label from "../form/Label";
-import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
+import Label from "../form/Label";
+import { Input } from "antd";
 
 // 5 ta static user
 const USERS = [
@@ -134,7 +134,6 @@ export default function SignInForm() {
                 <Button
                   className="w-full !bg-[#032E15]"
                   size="sm"
-                  type="submit"
                 >
                   Sign in
                 </Button>

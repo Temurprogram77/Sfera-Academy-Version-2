@@ -43,7 +43,6 @@ export default function App() {
       <Routes>
         {/* Auth Routes */}
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
 
         {/* Protected Dashboard Routes */}
         <Route

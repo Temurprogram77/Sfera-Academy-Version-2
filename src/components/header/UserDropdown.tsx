@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // react-router-dom dan useNavigate
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
+import { authService } from "../../services/authService ";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -16,13 +15,9 @@ export default function UserDropdown() {
   }
 
   function handleSignOut() {
-    // Tokenni o'chirish
-    localStorage.removeItem("token");
-    localStorage.removeItem("role"); // role ham o'chirish mumkin
+    authService.logout(); // service orqali logout qilindi
     closeDropdown();
-    navigate("/signin"); // login sahifaga yo'naltirish
   }
-
   return (
     <div className="relative">
       <button
@@ -34,9 +29,8 @@ export default function UserDropdown() {
         </span>
         <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"

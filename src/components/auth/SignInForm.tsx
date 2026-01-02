@@ -1,83 +1,71 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
-import Button from "../ui/button/Button";
 import Label from "../form/Label";
-import { Input } from "antd";
+import { Button, Input } from "antd";
+import { useLogin } from "../../hooks/useAuth";
 
-// 5 ta static user
-const USERS = [
-  {
-    role: "ADMIN",
-    phone: "+998901111111",
-    password: "admin123",
-    redirect: "/dashboard/admin",
-  },
-  {
-    role: "SUPER_ADMIN",
-    phone: "+998902222222",
-    password: "super123",
-    redirect: "/dashboard/super_admin",
-  },
-  {
-    role: "TEACHER",
-    phone: "+998903333333",
-    password: "teacher123",
-    redirect: "/dashboard/teacher",
-  },
-  {
-    role: "STUDENT",
-    phone: "+998904444444",
-    password: "student123",
-    redirect: "/dashboard/student",
-  },
-  {
-    role: "PARENT",
-    phone: "+998905555555",
-    password: "parent123",
-    redirect: "/dashboard/parent",
-  },
-];
+// Role'ga qarab redirect qilish uchun mapping
+const ROLE_REDIRECTS: Record<string, string> = {
+  ROLE_SUPER_ADMIN: "/dashboard/super_admin",
+  ROLE_ADMIN: "/dashboard/admin",
+  ROLE_TEACHER: "/dashboard/teacher",
+  ROLE_STUDENT: "/dashboard/student",
+  ROLE_PARENT: "/dashboard/parent",
+};
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+  const loginMutation = useLogin();
 
-  // Agar foydalanuvchi allaqachon login bo'lsa, avtomatik dashboardga yo'naltirish
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+  // ❌ useEffect ni olib tashladik - bu loop yaratgan edi
 
-    if (token && role) {
-      const user = USERS.find((u) => u.role === role);
-      if (user) {
-        navigate(user.redirect, { replace: true });
-      }
-    }
-  }, [navigate]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const user = USERS.find(
-      (u) => u.phone === phone && u.password === password
-    );
-
-    if (!user) {
-      toast.error("Telefon raqam yoki parol noto‘g‘ri");
+    // Validation
+    if (!phone || !password) {
+      toast.error("Telefon raqam va parolni kiriting!");
       return;
     }
 
-    // Token yaratish
-    const token = btoa(`${user.phone}:${user.role}`);
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", user.role);
+    // Phone format validation
+    if (!phone.startsWith("998") && !phone.startsWith("+998")) {
+      toast.error("Telefon raqam 998 bilan boshlanishi kerak!");
+      return;
+    }
 
-    navigate(user.redirect);
-    toast.success(`Muvaffaqiyatli kirish ${user.role}! `);
+    // + belgisini olib tashlash
+    const cleanPhone = phone.replace(/\+/g, "");
+
+    try {
+      // API ga login request
+      const response = await loginMutation.mutateAsync({
+        phone: cleanPhone,
+        password: password,
+      });
+
+      console.log("Login response:", response);
+
+      // Success - role'ga qarab redirect
+      if (response.success && response.data) {
+        const userRole = response.message as string;
+        const redirectPath = ROLE_REDIRECTS[userRole] || "/dashboard/teacher";
+
+        toast.success(`Xush kelibsiz!`);
+
+        // Navigate qilish
+        navigate(redirectPath, { replace: true });
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast.error(error?.message || "Login xatolik!");
+    }
   };
 
   return (
@@ -86,36 +74,42 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign In
+              Kirish
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your phone and password to sign in!
+              Kirish uchun telefon raqamingiz va parolingizni kiriting!
             </p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
+              {/* Phone Input */}
               <div>
                 <Label>
-                  Phone <span className="text-error-500">*</span>
+                  Telefon <span className="text-error-500">*</span>
                 </Label>
                 <Input
-                  placeholder="+998901234567"
+                  placeholder="998900000000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  disabled={loginMutation.isPending}
+                  size="large"
                 />
               </div>
 
+              {/* Password Input */}
               <div>
                 <Label>
-                  Password <span className="text-error-500">*</span>
+                  Parol <span className="text-error-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Parolni kiriting"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={loginMutation.isPending}
+                    size="large"
                   />
                   <span
                     onClick={() => setShowPassword(!showPassword)}
@@ -132,12 +126,23 @@ export default function SignInForm() {
 
               <div>
                 <Button
-                  className="w-full !bg-[#032E15]"
-                  size="sm"
+                  type="primary"
+                  htmlType="submit"
+                  className="w-full !bg-[#032E15] hover:!bg-[#032E15] outline-none"
+                  loading={loginMutation.isPending}
+                  disabled={loginMutation.isPending}
+                  size="large"
                 >
-                  Sign in
+                  {loginMutation.isPending ? "Kirish..." : "Kirish"}
                 </Button>
               </div>
+
+              {/* Error Message */}
+              {loginMutation.isError && (
+                <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                  {(loginMutation.error as any)?.message || "Xatolik yuz berdi. Qaytadan urinib ko'ring."}
+                </div>
+              )}
             </div>
           </form>
         </div>

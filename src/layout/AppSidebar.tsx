@@ -24,7 +24,7 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   subItems?: { name: string; path: string }[];
-  roles: string[]; // Qaysi rollarda ko‘rinishi kerak
+  roles: string[]; // Qaysi rollarda ko'rinishi kerak
 };
 
 const allNavItems: NavItem[] = [
@@ -32,77 +32,77 @@ const allNavItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Boshqaruv paneli",
     path: "/",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN"],
   },
   {
     icon: <UserIcon />,
     name: "O'qituvchilar",
     path: "/teachers",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN"],
   },
   {
     icon: <UserCircleIcon />,
     name: "O'quvchilar",
     path: "/students",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "PARENT"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_TEACHER", "ROLE_PARENT"],
   },
   {
     icon: <GroupIcon />,
     name: "Ota-onalar",
     path: "/parents",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN"],
   },
   {
     icon: <CheckCircleIcon />,
     name: "Davomat",
     path: "/attendance",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_TEACHER"],
   },
   {
     icon: <GroupIcon />,
     name: "Guruhlar",
     path: "/groups",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_TEACHER"],
   },
   {
     icon: <BoxIcon />,
     name: "Xonalar",
     path: "/rooms",
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN"],
   },
   {
     icon: <CalenderIcon />,
     name: "Taqvim",
     path: "/calendar",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT", "PARENT"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_TEACHER", "ROLE_STUDENT", "ROLE_PARENT"],
   },
   {
     icon: <UserCircleIcon />,
     name: "Shaxsiy profil",
     path: "/profile",
-    roles: ["SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT", "PARENT"],
+    roles: ["ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_TEACHER", "ROLE_STUDENT", "ROLE_PARENT"],
   },
   // UI va test sahifalari faqat SUPER_ADMIN ga
   {
     icon: <ListIcon />,
     name: "Formalar",
     subItems: [{ name: "Forma elementlari", path: "/form-elements" }],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
   {
     icon: <TableIcon />,
     name: "Jadvallar",
     subItems: [{ name: "Oddiy jadvallar", path: "/basic-tables" }],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
   {
     icon: <PageIcon />,
     name: "Sahifalar",
     subItems: [
-      { name: "Bo‘sh sahifa", path: "/blank" },
+      { name: "Bo'sh sahifa", path: "/blank" },
       { name: "404 Xato", path: "/error-404" },
     ],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
 ];
 
@@ -114,7 +114,7 @@ const othersItems: NavItem[] = [
       { name: "Chiziqli diagramma", path: "/line-chart" },
       { name: "Ustunli diagramma", path: "/bar-chart" },
     ],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
   {
     icon: <BoxCubeIcon />,
@@ -127,16 +127,16 @@ const othersItems: NavItem[] = [
       { name: "Rasmlar", path: "/images" },
       { name: "Videolar", path: "/videos" },
     ],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
   {
     icon: <PlugInIcon />,
     name: "Autentifikatsiya",
     subItems: [
       { name: "Kirish", path: "/signin" },
-      { name: "Ro‘yxatdan o‘tish", path: "/signup" },
+      { name: "Ro'yxatdan o'tish", path: "/signup" },
     ],
-    roles: ["SUPER_ADMIN"],
+    roles: ["ROLE_SUPER_ADMIN"],
   },
 ];
 
@@ -154,10 +154,11 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // localStorage dan role ni o'qish
+  // localStorage dan role ni o'qish - ✅ TO'G'IRLANDI
   useEffect(() => {
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("user_role"); // ✅ "user_role" ga o'zgartirdik
     setCurrentRole(role);
+    console.log("Sidebar loaded with role:", role); // Debug uchun
   }, []);
 
   // Role bo'yicha filtrlangan menyular
@@ -220,22 +221,19 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
+              className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-active"
                   : "menu-item-inactive"
-              } cursor-pointer flex items-center gap-3 ${
-                !isExpanded && !isHovered
+                } cursor-pointer flex items-center gap-3 ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              }`}
+                }`}
             >
               <span
-                className={`menu-item-icon-size ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
+                className={`menu-item-icon-size ${openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
                     : "menu-item-icon-inactive"
-                }`}
+                  }`}
               >
                 {nav.icon}
               </span>
@@ -244,12 +242,11 @@ const AppSidebar: React.FC = () => {
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
+                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
+                      openSubmenu?.index === index
                       ? "rotate-180 text-brand-500"
                       : ""
-                  }`}
+                    }`}
                 />
               )}
             </button>
@@ -257,13 +254,11 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                } cursor-pointer flex items-center gap-3 ${
-                  !isExpanded && !isHovered
+                className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  } cursor-pointer flex items-center gap-3 ${!isExpanded && !isHovered
                     ? "lg:justify-center"
                     : "lg:justify-start"
-                }`}
+                  }`}
               >
                 <span className="menu-item-icon-size">{nav.icon}</span>
                 {(isExpanded || isHovered || isMobileOpen) && (
@@ -292,11 +287,10 @@ const AppSidebar: React.FC = () => {
                   <li key={subItem.name}>
                     <Link
                       to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
+                      className={`menu-dropdown-item ${isActive(subItem.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
-                      }`}
+                        }`}
                     >
                       {subItem.name}
                     </Link>
@@ -319,15 +313,13 @@ const AppSidebar: React.FC = () => {
     <aside
       className={`fixed mt-16 px-3 flex flex-col lg:mt-0 top-0 left-0 bg-white text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${isExpanded || isHovered ? "w-[290px]" : "w-[90px]"} 
-        ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
     >
       {/* Logo */}
       <div
-        className={`py-5 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
+        className={`py-5 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          }`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -355,11 +347,10 @@ const AppSidebar: React.FC = () => {
             {filteredNavItems.length > 0 && (
               <div>
                 <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                    !isExpanded && !isHovered
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                       ? "lg:justify-center"
                       : "justify-start"
-                  }`}
+                    }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? (
                     "Menyu"
@@ -375,11 +366,10 @@ const AppSidebar: React.FC = () => {
             {filteredOthersItems.length > 0 && (
               <div>
                 <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                    !isExpanded && !isHovered
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                       ? "lg:justify-center"
                       : "justify-start"
-                  }`}
+                    }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? (
                     "Boshqalar"
